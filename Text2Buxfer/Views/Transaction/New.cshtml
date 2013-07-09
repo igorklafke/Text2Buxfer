@@ -1,0 +1,73 @@
+@model Text2Buxfer.Models.Transaction
+
+@{
+    ViewBag.Title = "New Transaction";
+}
+
+<h2>New Transaction</h2>
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset class="form-horizontal">
+        <legend>Transaction</legend>
+        <div class="control-group" style="margin-bottom:0;">
+            @Html.LabelFor(model => model.SMS, new { @class = "control-label" })
+            <div class="controls">
+                @Html.TextAreaFor(model => model.SMS, new { style = "width:100%;" })
+                @Html.ValidationMessageFor(model => model.SMS, null, new { @class = "help-inline" })
+            </div>
+        </div>
+        <div class="control-group" style="margin-bottom: 0;">
+            @Html.LabelFor(model => model.Text, new { @class = "control-label" })
+                <div class="controls">
+                    @Html.TextAreaFor(model => model.Text, new { style = "width:100%;" })
+                        @Html.ValidationMessageFor(model => model.Text, null, new { @class = "help-inline" })
+                        </div>
+                    </div>
+
+        <div class="form-actions no-color" style="padding-top:0;padding-bottom:0;margin-top:0;">
+            <input type="submit" value="Adicionar" class="btn btn-primary btn-large" style="" />
+        </div>
+</fieldset>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script type="text/javascript">
+    $().ready(function () {
+        $("#SMS").focus();
+
+        $("#SMS").bind('paste', function () {
+            //convert($(this).val());
+            //$("#Text").val($(this).val());
+            var element = this;
+            setTimeout(function () {
+                var text = $(element).val();
+                convert(text);
+            }, 100);
+        });
+
+        function convert(text) {
+            var desc, valor, account;
+            var sepHifen = text.indexOf("-");
+            var part1 = text.substring(0, sepHifen);
+            var part2 = text.substring(sepHifen + 2);
+            var sepValor = part2.indexOf("valor");
+            var sepEm = part2.indexOf(" em ");
+            if (part1.indexOf("MASTER") > 0)
+                account = "Master";
+            else if (part1.indexOf("VISA") > 0)
+                account = "Visa";
+
+            desc = part2.substring(0, sepValor - 1);
+            valor = part2.substring(sepValor + 9, sepEm).replace(',', '.');
+
+            $("#Text").val(desc + " " + valor + " acct:" + account);
+        }
+    });
+</script>
+}
+
